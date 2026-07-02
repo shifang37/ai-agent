@@ -1,0 +1,81 @@
+:root {
+  /* 品牌色 / 中性色 */
+  --color-text: #1f2330;
+  --color-text-soft: #5b6172;
+  --color-text-mute: #9aa0b0;
+  --color-bg: #f5f6fb;
+  --color-surface: #ffffff;
+  --color-border: #e8eaf1;
+
+  /* 恋爱大师主题（玫瑰粉） */
+  --love: #ff5a7a;
+  --love-soft: #ffe6ec;
+
+  /* 超级智能体主题（靛蓝紫） */
+  --manus: #6366f1;
+  --manus-soft: #e8e9ff;
+
+  --radius: 16px;
+  --shadow-sm: 0 1px 2px rgba(20, 24, 40, 0.06);
+  --shadow-md: 0 8px 24px rgba(20, 24, 40, 0.08);
+  --shadow-lg: 0 20px 50px rgba(20, 24, 40, 0.14);
+
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+textarea {
+  font-family: inherit;
+}
+
+/* 细滚动条 */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #d3d7e3;
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #bcc1d1;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}

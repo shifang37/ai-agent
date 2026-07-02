@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "search-mcp": {
+      "command": "java",
+      "args": [
+        "-Dspring.ai.mcp.server.stdio=true",
+        "-Dspring.main.web-application-type=none",
+        "-Dlogging.pattern.console=",
+        "-jar",
+        "search-mcp/target/search-mcp-0.0.1-SNAPSHOT.jar"
+      ],
+      "env": {}
+    }
+  }
+}
