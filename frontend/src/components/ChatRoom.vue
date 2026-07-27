@@ -63,6 +63,24 @@
         </div>
 
         <div class="bubble-wrap">
+          <!-- 高危工具人工确认卡片 -->
+          <div v-if="msg.type === 'confirm'" class="bubble ai confirm-card">
+            <div class="confirm-title">⚠️ 高危操作待确认</div>
+            <div class="confirm-desc">智能体请求执行以下高危工具，是否允许？</div>
+            <div v-for="(tool, i) in msg.payload.tools" :key="i" class="confirm-tool">
+              <div class="confirm-tool-name">{{ tool.name }}</div>
+              <pre class="confirm-tool-args">{{ tool.arguments }}</pre>
+            </div>
+            <div v-if="msg.confirmState === 'pending'" class="confirm-actions">
+              <button class="confirm-btn approve" type="button" @click="handleConfirm(msg, true)">批准执行</button>
+              <button class="confirm-btn reject" type="button" @click="handleConfirm(msg, false)">拒绝</button>
+            </div>
+            <div v-else class="confirm-result" :class="msg.confirmState">
+              {{ msg.confirmState === 'approved' ? '✅ 已批准，继续执行…' : '⛔ 已拒绝该操作' }}
+            </div>
+          </div>
+
+          <template v-else>
           <div class="bubble" :class="[msg.role, { error: msg.status === 'error' }]">
             <!-- 流式中且暂无内容：显示打字动画 -->
             <span v-if="msg.role === 'ai' && msg.status === 'streaming' && !msg.content" class="typing">
@@ -87,6 +105,7 @@
               复制
             </button>
           </div>
+          </template>
         </div>
       </div>
     </main>
@@ -131,6 +150,7 @@
 import { computed, nextTick, onUnmounted, ref } from 'vue'
 import { createSSEConnection } from '../utils/sse'
 import { generateChatId, uid } from '../utils/id'
+import { confirmManusToolCall } from '../api/chat'
 
 const props = defineProps({
   appTitle: { type: String, required: true },
@@ -234,6 +254,26 @@ function sendText(text) {
   const url = props.buildUrl(content, chatId.value)
   currentConn = createSSEConnection(url, {
     onMessage: (data) => {
+      // 高危工具确认事件：弹出确认卡片而非拼接到正文
+      if (data.startsWith('[CONFIRM]')) {
+        try {
+          const payload = JSON.parse(data.slice('[CONFIRM]'.length))
+          messages.value.push({
+            id: uid(),
+            role: 'ai',
+            type: 'confirm',
+            payload,
+            confirmState: 'pending',
+            content: '',
+            status: 'done',
+            time: nowTime()
+          })
+          scrollToBottom()
+          return
+        } catch {
+          // 解析失败则按普通文本处理
+        }
+      }
       // 逐块拼接：token 用 '' 连接，步骤用 '\n' 连接
       const sep = ai.content && props.chunkSeparator ? props.chunkSeparator : ''
       ai.content += sep + data
@@ -254,6 +294,17 @@ function sendText(text) {
       scrollToBottom()
     }
   })
+}
+
+async function handleConfirm(msg, approved) {
+  if (msg.confirmState !== 'pending') return
+  msg.confirmState = approved ? 'approved' : 'rejected'
+  try {
+    await confirmManusToolCall(msg.payload.agentId, approved)
+  } catch {
+    // 提交失败恢复待确认状态，允许重试
+    msg.confirmState = 'pending'
+  }
 }
 
 function stop() {
@@ -521,6 +572,75 @@ onUnmounted(() => {
 .bubble.error {
   background: #fff1f0;
   color: #cf1322;
+}
+
+/* 高危工具确认卡片 */
+.confirm-card {
+  border: 1.5px solid #f59e0b;
+  background: #fffbeb;
+  max-width: 100%;
+}
+.confirm-title {
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 4px;
+}
+.confirm-desc {
+  font-size: 13px;
+  color: var(--color-text-soft);
+  margin-bottom: 8px;
+}
+.confirm-tool {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.confirm-tool-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.confirm-tool-args {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--color-text-soft);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.confirm-btn {
+  padding: 6px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  transition: filter 0.15s;
+}
+.confirm-btn:hover {
+  filter: brightness(1.05);
+}
+.confirm-btn.approve {
+  background: #16a34a;
+}
+.confirm-btn.reject {
+  background: #dc2626;
+}
+.confirm-result {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.confirm-result.approved {
+  color: #16a34a;
+}
+.confirm-result.rejected {
+  color: #dc2626;
 }
 
 .bubble-meta {

@@ -1,7 +1,6 @@
 package com.tzy.backend.agent;
 
 import cn.hutool.core.util.StrUtil;
-import com.itextpdf.styledxmlparser.jsoup.internal.StringUtil;
 import com.tzy.backend.agent.model.AgentState;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -19,6 +19,8 @@ import java.util.concurrent.CompletableFuture;
  *
  * 提供状态转换，内存管理和基于步骤的执行循环的基础功能
  * 子类必须实现step方法
+ *
+ * @author shifang37
  */
 
 @Data
@@ -26,6 +28,12 @@ import java.util.concurrent.CompletableFuture;
 public abstract class BaseAgent {
     //核心属性
     private String name;
+
+    //智能体实例唯一标识（用于指标统计与人工确认回调）
+    private final String agentId = UUID.randomUUID().toString();
+
+    //流式运行时的 SSE 输出通道，供子类在执行过程中推送事件（如高危工具确认请求）
+    private SseEmitter emitter;
 
     //提示
     private String systemPrompt;
@@ -51,7 +59,7 @@ public abstract class BaseAgent {
      * @return 执行结果
      */
     public String run(String userPrompt){
-        if(this.state == AgentState.IDLE){
+        if(this.state != AgentState.IDLE){
             throw new RuntimeException("<UNK>" + this.state + "</UNK>");
         }
 
@@ -111,6 +119,8 @@ public abstract class BaseAgent {
     public SseEmitter runStream(String userPrompt) {
         // 创建SseEmitter，设置较长的超时时间
         SseEmitter emitter = new SseEmitter(300000L); // 5分钟超时
+        // 保存输出通道，供执行过程中推送事件（如高危工具确认请求）
+        this.emitter = emitter;
 
         // 使用线程异步处理，避免阻塞主线程
         CompletableFuture.runAsync(() -> {
@@ -120,7 +130,7 @@ public abstract class BaseAgent {
                     emitter.complete();
                     return;
                 }
-                if (StringUtil.isBlank(userPrompt)) {
+                if (StrUtil.isBlank(userPrompt)) {
                     emitter.send("错误：不能使用空提示词运行代理");
                     emitter.complete();
                     return;

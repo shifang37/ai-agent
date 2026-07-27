@@ -28,3 +28,11 @@ export function healthCheck() {
 export function chatWithLoveAppSync(message, chatId) {
   return request.get('/ai/love_app/chat/sync', { params: { message, chatId } })
 }
+
+/**
+ * 确认/拒绝超级智能体的高危工具调用（Human-in-the-loop）
+ * 对应后端：POST /ai/manus/confirm?agentId=&approved=
+ */
+export function confirmManusToolCall(agentId, approved) {
+  return request.post('/ai/manus/confirm', null, { params: { agentId, approved } })
+}
