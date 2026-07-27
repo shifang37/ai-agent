@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import java.io.File;
 import java.util.List;
 
+/**
+ * @author shifang37
+ */
 @Configuration
 @Slf4j
 public class LoveAppVectorStoreConfig {

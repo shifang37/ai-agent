@@ -3,6 +3,9 @@ package com.tzy.backend.rag;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.rag.generation.augmentation.ContextualQueryAugmenter;
 
+/**
+ * @author shifang37
+ */
 public class LoveAppContextualQueryAugmenterFactory {
     public static ContextualQueryAugmenter createInstance() {
         PromptTemplate emptyContextPromptTemplate = new PromptTemplate("""

@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author shifang37
+ */
 @Component
 @Slf4j
 class LoveAppDocumentLoader {

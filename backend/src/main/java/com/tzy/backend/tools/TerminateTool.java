@@ -2,6 +2,9 @@ package com.tzy.backend.tools;
 
 import org.springframework.ai.tool.annotation.Tool;
 
+/**
+ * @author shifang37
+ */
 public class TerminateTool {
   
     @Tool(description = """  

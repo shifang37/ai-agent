@@ -9,6 +9,8 @@ import java.util.Map;
 /**
  * 自定义 Re2 Advisor
  * 可提高大型语言模型的推理能力
+ *
+ * @author shifang37
  */
 public class ReReadingAdvisor implements CallAroundAdvisor, StreamAroundAdvisor {
 

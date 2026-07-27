@@ -1,19 +1,23 @@
 package com.tzy.backend.agent;
 
 import com.tzy.backend.advisor.MyLoggerAdvisor;
+import com.tzy.backend.advisor.TokenUsageMonitorAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author shifang37
+ */
 @Component
-public class YuManus extends ToolCallAgent {
+public class SuperAgent extends ToolCallAgent {
 
-    public YuManus(ToolCallback[] allTools, ChatModel dashscopeChatModel) {
+    public SuperAgent(ToolCallback[] allTools, ChatModel dashscopeChatModel) {
         super(allTools);
-        this.setName("yuManus");
+        this.setName("superAgent");
         String SYSTEM_PROMPT = """  
-                You are YuManus, an all-capable AI assistant, aimed at solving any task presented by the user.  
+                You are SuperAgent, an all-capable AI assistant, aimed at solving any task presented by the user.  
                 You have various tools at your disposal that you can call upon to efficiently complete complex requests.  
                 """;
         this.setSystemPrompt(SYSTEM_PROMPT);
@@ -27,7 +31,11 @@ public class YuManus extends ToolCallAgent {
         this.setMaxSteps(20);
         // 初始化客户端
         ChatClient chatClient = ChatClient.builder(dashscopeChatModel)
-                .defaultAdvisors(new MyLoggerAdvisor())
+                .defaultAdvisors(
+                        new MyLoggerAdvisor(),
+                        // 按本次 Agent 任务（agentId）累计 Token 用量与 LLM 调用耗时
+                        new TokenUsageMonitorAdvisor(this.getAgentId())
+                )
                 .build();
         this.setChatClient(chatClient);
     }

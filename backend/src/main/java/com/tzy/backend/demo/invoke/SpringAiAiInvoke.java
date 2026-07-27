@@ -15,7 +15,7 @@ public class SpringAiAiInvoke implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        AssistantMessage output = dashscopeChatModel.call(new Prompt("你好，我是鱼皮"))
+        AssistantMessage output = dashscopeChatModel.call(new Prompt("你好，请做个简短的自我介绍"))
                 .getResult()
                 .getOutput();
         System.out.println(output.getText());

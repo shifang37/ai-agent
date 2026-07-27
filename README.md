@@ -3,7 +3,7 @@
 基于 **Spring AI Alibaba + Vue 3** 的 AI 应用集合，包含两个核心应用：
 
 - **AI 恋爱大师（LoveApp）**：基于 RAG（检索增强生成）的恋爱咨询对话应用，支持多轮对话记忆、本地/云端知识库检索。
-- **AI 超级智能体（YuManus）**：基于 ReAct 模式的自主规划智能体，可自动调用工具（联网搜索、网页抓取、文件读写、PDF 生成、资源下载、终端命令等）逐步完成复杂任务。
+- **AI 超级智能体（SuperAgent）**：基于 ReAct 模式的自主规划智能体，可自动调用工具（联网搜索、网页抓取、文件读写、PDF 生成、资源下载、终端命令等）逐步完成复杂任务。
 
 ## 技术栈
 
@@ -22,7 +22,7 @@
 ai-agent
 ├── backend/                        # Spring Boot 后端
 │   ├── src/main/java/com/tzy/backend/
-│   │   ├── agent/                  # ReAct 智能体（BaseAgent / ReActAgent / ToolCallAgent / YuManus）
+│   │   ├── agent/                  # ReAct 智能体（BaseAgent / ReActAgent / ToolCallAgent / SuperAgent）
 │   │   ├── app/                    # AI 恋爱大师应用（LoveApp）
 │   │   ├── advisor/                # 自定义 Advisor（日志、重读等）
 │   │   ├── rag/                    # RAG：文档加载、向量库配置、查询增强

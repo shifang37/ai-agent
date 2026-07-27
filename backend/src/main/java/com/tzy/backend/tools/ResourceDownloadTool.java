@@ -8,6 +8,9 @@ import org.springframework.ai.tool.annotation.ToolParam;
 
 import java.io.File;
 
+/**
+ * @author shifang37
+ */
 public class ResourceDownloadTool {
 
     @Tool(description = "Download a resource from a given URL")

@@ -8,6 +8,8 @@ import reactor.core.publisher.Flux;
 /**
  * 自定义日志 Advisor
  * 打印 info 级别日志、只输出单次用户提示词和 AI 回复的文本
+ *
+ * @author shifang37
  */
 @Slf4j
 public class MyLoggerAdvisor implements CallAroundAdvisor, StreamAroundAdvisor {

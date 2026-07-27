@@ -1,5 +1,8 @@
 package com.tzy.backend.constant;
 
+/**
+ * @author shifang37
+ */
 public interface FileConstant {
 
     /**

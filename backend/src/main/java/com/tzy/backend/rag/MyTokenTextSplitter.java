@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * @author shifang37
+ */
 @Component
 class MyTokenTextSplitter {
     public List<Document> splitDocuments(List<Document> documents) {

@@ -7,6 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author shifang37
+ */
 @SpringBootTest
 class ImageSearchToolTest {
 

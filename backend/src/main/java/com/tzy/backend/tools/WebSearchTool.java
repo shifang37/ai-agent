@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author shifang37
+ */
 public class WebSearchTool {
 
     // SearchAPI 的搜索接口地址

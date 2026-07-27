@@ -13,6 +13,9 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author shifang37
+ */
 @SpringBootTest
 public class PgVectorVectorStoreConfigTest {
 

@@ -8,6 +8,9 @@ import org.springframework.ai.rag.preretrieval.query.transformation.QueryTransfo
 import org.springframework.ai.rag.preretrieval.query.transformation.RewriteQueryTransformer;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author shifang37
+ */
 @Component
 public class QueryRewriter {
 
