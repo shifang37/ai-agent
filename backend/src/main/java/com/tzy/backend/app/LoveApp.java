@@ -1,8 +1,10 @@
 package com.tzy.backend.app;
 
 import com.google.gson.internal.NonNullElementWrapperList;
+import com.alibaba.cloud.ai.model.RerankModel;
 import com.tzy.backend.advisor.MyLoggerAdvisor;
 import com.tzy.backend.advisor.ReReadingAdvisor;
+import com.tzy.backend.advisor.TokenUsageMonitorAdvisor;
 import com.tzy.backend.rag.LoveAppRagCustomAdvisorFactory;
 import com.tzy.backend.rag.QueryRewriter;
 import jakarta.annotation.Resource;
@@ -18,6 +20,7 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -26,6 +29,9 @@ import java.util.List;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
+/**
+ * @author shifang37
+ */
 @Component
 @Slf4j
 public class LoveApp {
@@ -47,7 +53,9 @@ public class LoveApp {
                         //自定义日志拦截器
                         new MyLoggerAdvisor(),
                         //自定义增强拦截器
-                        new ReReadingAdvisor()
+                        new ReReadingAdvisor(),
+                        //Token 用量与调用链路监控（按 chatId 累计，见 /monitor/metrics 接口）
+                        new TokenUsageMonitorAdvisor()
                 )
                 .build();
     }
@@ -88,10 +96,13 @@ public class LoveApp {
     private Advisor loveAppRagCloudAdvisor;
 
     @Resource
-    private VectorStore pgVectorVectorStore;
-
-    @Resource
     private QueryRewriter queryRewriter;
+
+    /**
+     * DashScope gte-rerank 重排模型（两阶段检索的精排阶段）
+     */
+    @Autowired(required = false)
+    private RerankModel dashscopeRerankModel;
 
     @Resource
     private ToolCallback[] allTools;
@@ -110,10 +121,12 @@ public class LoveApp {
                 //.advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
                 // 应用增强检索服务（云知识库服务）
                 //.advisors(loveAppRagCloudAdvisor)
-                .advisors(new QuestionAnswerAdvisor(pgVectorVectorStore))
+                // pgvector RDS 已下线，检索统一走本地 SimpleVectorStore 两阶段召回+重排
+                //.advisors(new QuestionAnswerAdvisor(pgVectorVectorStore))
                 .advisors(
+                        // 两阶段检索：向量粗召回（topK=15）+ gte-rerank 精排取 top3
                         LoveAppRagCustomAdvisorFactory.createLoveAppRagCustomAdvisor(
-                                loveAppVectorStore, "已婚"
+                                loveAppVectorStore, "已婚", dashscopeRerankModel
                         )
                 )
                 .tools(allTools)
